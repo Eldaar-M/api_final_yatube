@@ -43,11 +43,6 @@ class FollowSerializer(serializers.ModelSerializer):
         slug_field='username'
     )
 
-    def validate(self, data):
-        if self.context.get('request').user == data['following']:
-            raise serializers.ValidationError(MESSAGE_SUB_YOURSELF)
-        return data
-
     class Meta:
         model = Follow
         fields = ('user', 'following')
@@ -58,3 +53,8 @@ class FollowSerializer(serializers.ModelSerializer):
                 message=MESSAGE_SUB_ISSUED
             ),
         )
+
+    def validate_following(self, value):
+        if self.context.get('request').user == value:
+            raise serializers.ValidationError(MESSAGE_SUB_YOURSELF)
+        return value
